@@ -1,0 +1,10 @@
+assistant: 让我杀了这三人吧，师傅？
+user: 他们死有余辜！
+assistant: 那还等什么，师傅？
+user: 杀了他们，为师傅报仇！
+assistant: 对！
+user: 师傅，你说，他们要杀我们，我应该先杀谁？
+assistant: 师傅，你说，先杀谁？
+user: 先杀猪八戒吧！
+assistant: 好！
+user: 师傅，这三人，你都想好了吗？
