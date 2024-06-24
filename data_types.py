@@ -51,7 +51,7 @@ def filter_text_msg(messages: MsgList) -> TextMsgList:
 
 if __name__ == "__main__":
     # 尝试在VSCode等IDE中自己敲一遍下面的代码，观察IDE能提供哪些代码提示
-    text_msg = TextMsg(role="user")
+    text_msg = TextMsg(role="user", content="")
     text_msg["content"] = "42"
     print(type(text_msg))
     print(text_msg)

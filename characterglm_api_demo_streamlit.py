@@ -110,11 +110,15 @@ def draw_new_image():
         return
     
     # TODO: 加上风格选项
-    image_prompt = '二次元风格。' + image_prompt.strip()
+    sttyle = st.session_state["select_style"]
+    if sttyle is None:
+        sttyle = "二次元"
+    image_prompt = f'{sttyle}风格。{image_prompt.strip()}'
     
     print(f"image_prompt = {image_prompt}")
     n_retry = 3
     st.markdown("正在生成图片，请稍等...")
+    img_url = None
     for i in range(n_retry):
         try:
             img_url = generate_cogview_image(image_prompt)
@@ -126,19 +130,21 @@ def draw_new_image():
                 return
         else:
             break
-    img_msg = ImageMsg({"role": "image", "image": img_url, "caption": image_prompt})
     # 若history的末尾有图片消息，则替换它，（重新生成）
     # 否则，append（新增）
     while st.session_state["history"] and st.session_state["history"][-1]["role"] == "image":
         st.session_state["history"].pop()
-    st.session_state["history"].append(img_msg)
+    if img_url is not None:
+        img_msg = ImageMsg(role="image", image=img_url, caption=image_prompt)
+        st.session_state["history"].append(img_msg)
     st.rerun()
 
 
 button_labels = {
     "clear_meta": "清空人设",
     "clear_history": "清空对话历史",
-    "gen_picture": "生成图片"
+    "gen_picture": "生成图片",
+    "select_style": "选择风格"
 }
 if debug:
     button_labels.update({
@@ -173,6 +179,9 @@ with st.container():
     with button_key_to_col["gen_picture"]:
         gen_picture = st.button(button_labels["gen_picture"], key="gen_picture")
 
+    with button_key_to_col["select_style"]:
+        select_style = st.selectbox(label="选择风格", options=("二次元", "电影", "照片"), key="select_style")
+        
     if debug:
         with button_key_to_col["show_api_key"]:
             show_api_key = st.button(button_labels["show_api_key"], key="show_api_key")
@@ -233,7 +242,7 @@ def start_chat():
             st.error("未设置API_KEY")
 
         input_placeholder.markdown(query)
-        st.session_state["history"].append(TextMsg({"role": "user", "content": query}))
+        st.session_state["history"].append(TextMsg(role="user", content=query))
         
         response_stream = get_characterglm_response(filter_text_msg(st.session_state["history"]), meta=st.session_state["meta"])
         bot_response = output_stream_response(response_stream, message_placeholder)
@@ -241,7 +250,7 @@ def start_chat():
             message_placeholder.markdown("生成出错")
             st.session_state["history"].pop()
         else:
-            st.session_state["history"].append(TextMsg({"role": "assistant", "content": bot_response}))
+            st.session_state["history"].append(TextMsg(role="assistant", content=bot_response))
             
     
 start_chat()
